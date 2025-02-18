@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -17,8 +16,11 @@ public class UserService implements UserDetailsService {
     @Autowired
     private UserRepo userRepo;
 
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
     public User registerUser(User user)
     {
+        user.setPassword(encoder.encode(user.getPassword()));
         return userRepo.save(user);
     }
 
