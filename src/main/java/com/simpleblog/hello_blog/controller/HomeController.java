@@ -21,8 +21,6 @@ public class HomeController {
 
     @Autowired
     private UserService userService;
-    @Autowired
-    private PostService postService;
 
     @GetMapping("/")
     public String greet()
@@ -39,25 +37,13 @@ public class HomeController {
 
     }
 
-    @PostMapping("/create/post")
-    public ResponseEntity<String> savePost(
-            @RequestParam("title") String title,
-            @RequestParam("description") String description,
-            @RequestParam("userId") int userId,
-            @RequestParam("creationDate") String creationDateStr,
-            @RequestParam(value = "image", required = false) MultipartFile imageFile
-    ) throws ParseException, IOException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"); // Use your format
-        Date creationDate = sdf.parse(creationDateStr);
-        byte[] imgFile = null;
-        if(imageFile != null && !imageFile.isEmpty())
-        {
-            imgFile = imageFile.getBytes();
-        }
-        PostInfo post = new PostInfo(userId, title, description, creationDate, imgFile);
+    @PostMapping("/login")
+    public String login(@RequestBody User user)
+    {
+        String status = userService.verify(user);
+        System.out.println(status);
+        return status;
+     }
 
-        postService.createPost(post);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Post created successfully" + post.toString());
-    }
 }

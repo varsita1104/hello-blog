@@ -1,5 +1,6 @@
 package com.simpleblog.hello_blog.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.Arrays;
@@ -40,12 +41,13 @@ public class PostInfo {
         this.image = image;
     }
 
+    @JsonProperty("userId")
+    public int getUserId()
+    {
+        return user.getUserId();
+    }
     public int getPostId() {
         return postId;
-    }
-
-    public void setPostId(int postId) {
-        this.postId = postId;
     }
 
     public String getTitle() {
@@ -88,18 +90,10 @@ public class PostInfo {
         isActive = active;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     @Override
     public String toString() {
         return "PostInfo{" +
-                "username=" + user.getUserId() +
+                "username=" + user.getUserId()+
                 ", postId=" + postId +
                 ", title='" + title + '\'' +
                 ", image=" + Arrays.toString(image) +
