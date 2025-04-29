@@ -10,8 +10,11 @@ import java.util.List;
 @Service
 public class PostService {
 
-    @Autowired
-    private PostRepo postRepo;
+    private final PostRepo postRepo;
+
+    public PostService(PostRepo postRepo) {
+        this.postRepo = postRepo;
+    }
 
     public void createPost(PostInfo postInfo)
     {
@@ -34,4 +37,5 @@ public class PostService {
 
         return postRepo.save(post);
     }
+
 }

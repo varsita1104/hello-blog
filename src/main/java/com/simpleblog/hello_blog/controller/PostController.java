@@ -20,8 +20,11 @@ import java.util.List;
 @RestController
 public class PostController {
 
-    @Autowired
-    private PostService postService;
+    private final PostService postService;
+
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
 
     @GetMapping("/api/posts")
     public List<PostInfo> getPost()

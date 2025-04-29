@@ -3,7 +3,6 @@ package com.simpleblog.hello_blog.service;
 import com.simpleblog.hello_blog.model.User;
 import com.simpleblog.hello_blog.model.UserPrincipal;
 import com.simpleblog.hello_blog.repo.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,18 +16,17 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService implements UserDetailsService {
 
-    @Autowired
-    private UserRepo userRepo;
+    private final UserRepo userRepo;
 
-    @Autowired
-    private JWTService jwtService;
+    private final JWTService jwtService;
 
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
 
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
-    @Autowired
-    public UserService(@Lazy AuthenticationManager authenticationManager) { // Use Lazy Injection
+    public UserService(UserRepo userRepo, JWTService jwtService, @Lazy AuthenticationManager authenticationManager) {
+        this.userRepo = userRepo;
+        this.jwtService = jwtService; // Use Lazy Injection
         this.authenticationManager = authenticationManager;
     }
 
