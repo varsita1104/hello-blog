@@ -25,17 +25,46 @@ public class PostService {
     {
         return postRepo.findAll();
     }
-    public PostInfo updatePost(PostInfo postInfo)
+
+    public List<PostInfo> getPostById(int userId)
     {
-        PostInfo post = postRepo.findById(postInfo.getPostId()).orElseThrow();
+        return postRepo.findAllById(userId);
+    }
 
-        post.setTitle(postInfo.getTitle());
-        post.setDescription(postInfo.getDescription());
-        post.setImage(postInfo.getImage());
-        post.setCreatedDate(postInfo.getCreatedDate());
-        post.setActive(postInfo.isActive());
+    public PostInfo updatePost(PostInfo updatePost)
+    {
+        PostInfo post = postRepo.findById(updatePost.getPostId()).orElseThrow();
 
-        return postRepo.save(post);
+        boolean update = false;
+
+        if(updatePost.getTitle() != null && updatePost.getTitle().equals(post.getTitle()))
+        {
+            update = true;
+            post.setTitle(updatePost.getTitle());
+        }
+        if(updatePost.getDescription() != null && updatePost.getDescription().equals(post.getDescription()))
+        {
+            update = true;
+            post.setDescription(updatePost.getDescription());
+        }
+        if(updatePost.getImage() != null && updatePost.getImage().equals(post.getImage()))
+        {
+            update = true;
+            post.setImage(updatePost.getImage());
+        }
+        if(updatePost.getCreatedDate() != null && updatePost.getCreatedDate().equals(post.getCreatedDate()))
+        {
+            update = true;
+            post.setCreatedDate(updatePost.getCreatedDate());
+        }
+        if(updatePost.isActive() != post.isActive())
+        {
+            update = true;
+            post.setActive(updatePost.isActive());
+        }
+        if(update)
+            return postRepo.save(post);
+        return post;
     }
 
 }

@@ -1,11 +1,14 @@
 package com.simpleblog.hello_blog.model;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
 import java.util.List;
 
 @Entity
-public class User {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,9 +16,6 @@ public class User {
     private String username;
     private String password;
     private String emailId;
-
-    @OneToMany(mappedBy = "user")
-    private List<PostInfo> postInfos;
 
     public int getUserId() {
         return userId;
@@ -25,12 +25,12 @@ public class User {
         this.userId = userId;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getUsername() {
+        return username;
     }
 
     public String getPassword() {
@@ -49,18 +49,34 @@ public class User {
         this.emailId = emailId;
     }
 
-    public List<PostInfo> getPostInfos() {
-        return postInfos;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public void setPostInfos(List<PostInfo> postInfos) {
-        this.postInfos = postInfos;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of();
     }
 
     @Override
     public String toString() {
         return "User{" +
-                "postInfos=" + postInfos +
                 ", emailId='" + emailId + '\'' +
                 ", password='" + password + '\'' +
                 ", username='" + username + '\'' +

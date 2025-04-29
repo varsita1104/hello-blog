@@ -27,10 +27,6 @@ public class PostInfo {
     private Date createdDate;
     private boolean isActive;
 
-    public PostInfo()
-    {
-
-    }
     public PostInfo(int userId, String title, String description, Date date, byte[] image) {
         user = new User();
         user.setUserId(userId);

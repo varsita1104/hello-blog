@@ -1,7 +1,10 @@
 package com.simpleblog.hello_blog.service;
 
+import com.simpleblog.hello_blog.exception.service.BadCredentialsException;
+import com.simpleblog.hello_blog.exception.service.EmailAlreadyExistsException;
+import com.simpleblog.hello_blog.exception.service.EmailNotFoundException;
+import com.simpleblog.hello_blog.exception.service.UserAlreadyExistsException;
 import com.simpleblog.hello_blog.model.User;
-import com.simpleblog.hello_blog.model.UserPrincipal;
 import com.simpleblog.hello_blog.repo.UserRepo;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,30 +33,42 @@ public class UserService implements UserDetailsService {
         this.authenticationManager = authenticationManager;
     }
 
-    public User registerUser(User user)
+    public void registerUser(User user)
     {
+        if(userRepo.findByEmail(user.getEmailId()).isPresent())
+        {
+            throw new EmailAlreadyExistsException("User EmailId Already Present");
+        }
+        else if(userRepo.findByUsername(user.getUsername()).isPresent())
+        {
+            throw new UserAlreadyExistsException("Username Already Present");
+        }
         user.setPassword(encoder.encode(user.getPassword()));
-        return userRepo.save(user);
+        userRepo.save(user);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByUsername(username);
 
-        if(user == null)
-        {
-            throw new UsernameNotFoundException("User Not Found");
-        }
-        return new UserPrincipal(user);
+        return userRepo.findByUsername(username).orElseThrow(() ->
+                new UsernameNotFoundException("username not found"));
     }
 
-    public String verify(User user)
+    public UserDetails loadUserByEmail(String email) throws EmailNotFoundException
     {
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                user.getUsername(), user.getPassword()
-        ));
+        return userRepo.findByEmail(email).orElseThrow(() -> new EmailNotFoundException("emailId not found"));
+    }
+
+    public String verify(User user, boolean isEmailLogin)
+    {
+        Authentication authentication = null;
+        String identifier = isEmailLogin ? user.getEmailId() : user.getUsername();
+
+        authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                identifier, user.getPassword()));
         if(authentication.isAuthenticated())
             return jwtService.generateToken(user.getUsername());
-        return "failed";
+
+        throw new BadCredentialsException("Invalid username/email or password");
     }
 }
